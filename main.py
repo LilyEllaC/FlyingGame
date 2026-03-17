@@ -1,8 +1,10 @@
 import constants as const
 import sprites
 import utilities as util
-import gameplay 
 import intro
+import menu
+import gameplay 
+
 
 #actual important stuff
 import pygame
@@ -16,7 +18,7 @@ clock= pygame.time.Clock()
 #actual main function
 async def main():
     global running
-    gameState="playing"
+    gameState="intro"
 
     while running:
         for event in pygame.event.get():
@@ -24,23 +26,41 @@ async def main():
             if event.type == pygame.QUIT:
                 running = False
 
+            #if its the intro
+            if gameState=="intro":
+                if event.type==pygame.MOUSEBUTTONDOWN:
+                    gameState="menu"
+
+            if gameState=="menu":
+                if event.type==pygame.MOUSEBUTTONDOWN:
+                    for button in menu.buttons:
+                        answer=button.checkIfClicked()
+                        if answer!="0":
+                            print("answer: "+answer)
+                            gameState="playing"
+                            gameplay.level=answer
+
+
             #if the game is playing
             if gameState=="playing":
                 if event.type==pygame.KEYDOWN:
                     gameplay.player.startMove(event.key)
                 if event.type==pygame.KEYUP:
                     gameplay.player.stopMove(event.key)
+
         
 
         #stuff
         const.SCREEN.fill(const.TEAL)
         if gameState=="intro":
             intro.play()
+        elif gameState=="menu":
+            menu.run()
         elif gameState=="playing":
             gameplay.play()
 
         #showing the FPS
-        util.toScreen("FPS:"+str(clock.get_fps()), const.FONT40, const.RED, const.WIDTH/2, 50)
+        #util.toScreen("FPS:"+str(clock.get_fps()), const.FONT40, const.RED, const.WIDTH/2, 50)
 
         #important ending stuff
         pygame.display.flip()

@@ -1,7 +1,9 @@
 import pygame
 import constants as const
-#player
+import utilities as util
 
+
+#player
 class Player(pygame.sprite.Sprite):
     def __init__(self, height, width, x, y, acceleration, airResistance, gravity):
         self.height=height
@@ -46,7 +48,6 @@ class Player(pygame.sprite.Sprite):
             self.movingU=True
         elif key==pygame.K_DOWN:
             self.movingD=True
-
         
     def move(self):
         #speeding up
@@ -62,7 +63,7 @@ class Player(pygame.sprite.Sprite):
         #slowing down
         self.speedH/=self.slowDown
         self.speedV/=self.slowDown
-
+        #print("speed: "+str(self.speedH))
 
         #moving
         self.x+=self.speedH
@@ -80,9 +81,59 @@ class Player(pygame.sprite.Sprite):
         if key==pygame.K_UP:
             self.movingU=False
 
-
     def display(self):
         const.SCREEN.blit(self.image, self.rect)
 
+
+#buttons
+class Button(pygame.sprite.Sprite):
+    def __init__(self, width, height, x, y, isLocked, number):
+        self.width=width
+        self.height=height
+        self.x=x
+        self.y=y
+        
+        #images
+        image1="assets/buttonLocked.png"
+        image2="assets/buttonFree.png"
+        image3="assets/buttonHovered.png"
+
+        self.imageLocked=pygame.transform.scale(pygame.image.load(image1),(width, height))
+        self.imageFree=pygame.transform.scale(pygame.image.load(image2),(width, height))
+        self.imageHovered=pygame.transform.scale(pygame.image.load(image3),(width, height))
+        self.isLocked=isLocked
+
+        if isLocked:
+            self.image=self.imageLocked
+        else:
+            self.image=self.imageFree
+
+        #number on the button
+        self.number=number
+        self.numSize=int(height/4*3)
+        self.textX=self.x+self.width/2
+        self.textY=self.y+self.height/2
+
+        #rect
+        self.rect=self.image.get_rect()
+        self.rect.x=self.x
+        self.rect.y=self.y
+
+    def checkIfHovered(self):
+        mousePositions=pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(mousePositions) and not self.isLocked:
+            self.image=self.imageHovered
+        elif not self.isLocked:
+            self.image=self.imageFree
+
+    def checkIfClicked(self):
+        if self.image==self.imageHovered:
+            return self.number
+        return "0"
+
+    def display(self):
+        const.SCREEN.blit(self.image, self.rect)
+        util.toScreenSize(self.number, self.numSize, const.BLACK, self.textX, self.textY)
 
         

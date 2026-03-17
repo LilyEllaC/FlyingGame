@@ -18,6 +18,12 @@ def toScreen3(words1, words2, words3, font, colour, x, y):
     toScreen(words2, font, colour, x, y)
     toScreen(words3, font, colour, x, y + font.get_height())
 
+def toScreenSize(words, size, colour, x, y):
+    text = pygame.font.Font("freesansbold.ttf", size).render(words, True, colour)
+    textRect = text.get_rect()
+    textRect.center = (x, y)
+    const.SCREEN.blit(text, textRect)
+
 #text to put an image to the screen
 def imageToScreen(imageName, x, y, width, height):
     image = pygame.image.load(imageName)
